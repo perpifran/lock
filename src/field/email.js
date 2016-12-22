@@ -1,16 +1,28 @@
 import trim from 'trim';
 import { setField } from './index';
 import { endsWith } from '../utils/string_utils';
+import { verifyHRDEmail } from '../connection/enterprise';
 
 const regExp = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export function validateEmail(str) {
+  return isEmail(str) !== null;
+}
+
+export function isEmail(str) {
   const result = regExp.exec(trim(str.toLowerCase()));
   return result && result[0];
 }
 
 export function setEmail(m, str) {
-  return setField(m, "email", str, validateEmail);
+  return setField(m, "email", str, (str) => {
+    const HRDValidEMail = verifyHRDEmail(m, str);
+
+    return {
+      valid: !HRDValidEMail && validateEmail(str),
+      hint: HRDValidEMail || undefined
+    };
+  });
 }
 
 export function emailDomain(str) {

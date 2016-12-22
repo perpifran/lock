@@ -11,7 +11,6 @@ import {
   setupLock,
   updateLock
 } from './core/actions';
-import { termsAccepted } from './connection/database/index';
 import * as l from './core/index';
 import * as c from './field/index';
 import * as idu from './utils/id_utils';
@@ -80,8 +79,7 @@ export default class Base extends EventEmitter {
       if (l.rendering(m)) {
         const screen = this.engine.render(m);
 
-        const disableSubmitButton = screen.name === "main.signUp"
-          && !termsAccepted(m);
+        const disableSubmitButton = screen.isSubmitDisabled(m);
 
         const i18nProp = {
           group: keyPath => i18n.group(m, keyPath),
